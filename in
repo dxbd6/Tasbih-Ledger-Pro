@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasbih Ledger Pro - Full Template</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #064e3b;
+            --secondary: #fbbf24;
+            --surface: #131313;
+        }
+        body {
+            background-color: var(--surface);
+            color: white;
+            font-family: 'Manrope', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+        }
+        .font-garamond { font-family: 'EB Garamond', serif; }
+        .haptic-active:active { transform: scale(0.95); transition: transform 0.1s; }
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#064e3b',
+                        secondary: '#fbbf24',
+                        surface: '#131313',
+                        'surface-container': '#1b1b1b',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- Components ---
+        const TopAppBar = ({ title }) => (
+            <div className="fixed top-0 left-0 w-full bg-surface/80 backdrop-blur-md border-b border-white/10 px-6 py-4 flex justify-between items-center z-50">
+                <i data-lucide="menu" className="w-6 h-6 text-primary"></i>
+                <h1 className="text-xl font-garamond font-semibold text-primary">{title}</h1>
+                <i data-lucide="calendar" className="w-6 h-6 text-primary"></i>
+            </div>
+        );
+
+        const BottomNavBar = ({ activeTab, setActiveTab }) => {
+            const tabs = [
+                { id: 'home', icon: 'home', label: 'Home' },
+                { id: 'counter', icon: 'circle-dot', label: 'Counter' },
+                { id: 'stats', icon: 'bar-chart-3', label: 'Stats' },
+                { id: 'history', icon: 'history', label: 'History' },
+                { id: 'settings', icon: 'settings', label: 'Settings' }
+            ];
+
+            return (
+                <div className="fixed bottom-0 left-0 w-full bg-surface-container border-t border-white/5 flex justify-around items-center px-4 py-3 pb-8 z-50">
+                    {tabs.map(tab => (
+                        <button 
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`flex flex-col items-center gap-1 transition-all ${activeTab === tab.id ? 'text-primary' : 'text-gray-500'}`}
+                        >
+                            <i data-lucide={tab.icon} className="w-6 h-6"></i>
+                            <span className="text-[10px] font-medium">{tab.label}</span>
+                            {activeTab === tab.id && <div className="w-1 h-1 bg-primary rounded-full"></div>}
+                        </button>
+                    ))}
+                </div>
+            );
+        };
+
+        // --- Screens ---
+        const SplashScreen = ({ onFinish }) => {
+            useEffect(() => {
+                const timer = setTimeout(onFinish, 2000);
+                return () => clearTimeout(timer);
+            }, []);
+
+            return (
+                <div className="h-screen w-full flex flex-col items-center justify-center bg-surface p-8 text-center animate-pulse">
+                    <div className="w-32 h-32 mb-8 relative">
+                        <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl"></div>
+                        <img src="https://lh3.googleusercontent.com/aida/ADBb0uh6JszOaJXB0Dk4TAoj7ldKXOttlG8SZelPMGpV3q11l3sCoIDX3Sv1XrmU77poRxmo2p50nR5o1iS33_WY24F_ImJJhhn0DmhnfzgD3Xfdq6d7EmjPl55l9fZjmvs7F28ohlcuHoK1v0y5PLU9XFqyFtANquu6qH_zRZ42WfsOXGZvH1A1u0izlunwxS10aEMkZr_-I_ouCz_Xet3abeS5jDGYEL6mop0LQj5c-pz8GAbzHtQLFaI6OW5Q" className="w-full h-full object-contain relative z-10" alt="Logo" />
+                    </div>
+                    <h1 className="text-4xl font-garamond text-primary mb-2">Tasbih Ledger Pro</h1>
+                    <p className="text-gray-400 italic">"Remember Allah, and hearts find peace."</p>
+                </div>
+            );
+        };
+
+        const Dashboard = ({ setActiveTab }) => (
+            <div className="pt-24 pb-32 px-6 overflow-y-auto">
+                <div className="mb-8 text-center">
+                    <p className="text-xs text-gray-500 tracking-widest mb-4 uppercase">Today's Total Zikr</p>
+                    <div className="relative w-48 h-48 mx-auto flex items-center justify-center">
+                        <svg className="absolute inset-0 w-full h-full -rotate-90">
+                            <circle cx="96" cy="96" r="88" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-white/5" />
+                            <circle cx="96" cy="96" r="88" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-secondary" strokeDasharray="552" strokeDashoffset="110" />
+                        </svg>
+                        <div className="text-center">
+                            <span className="block text-4xl font-bold">1,248</span>
+                            <span className="text-xs text-secondary">80% of Daily Goal</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex justify-between items-end mb-6">
+                    <h2 className="text-2xl font-garamond">My Tasbihs</h2>
+                    <button className="text-primary text-sm">View All</button>
+                </div>
+
+                <div className="space-y-4">
+                    {[
+                        { name: 'Subhanallah', sub: 'Glory be to Allah', count: 300, goal: 300, progress: 100 },
+                        { name: 'Alhamdulillah', sub: 'Praise be to Allah', count: 204, goal: 300, progress: 68 },
+                        { name: 'Astaghfirullah', sub: 'I seek forgiveness', count: 744, goal: 1000, progress: 74 }
+                    ].map((t, idx) => (
+                        <div key={idx} className="bg-surface-container p-5 rounded-2xl border border-white/5 flex justify-between items-center haptic-active">
+                            <div className="flex-1">
+                                <h3 className="text-lg font-semibold">{t.name}</h3>
+                                <p className="text-xs text-gray-400 mb-3">{t.sub}</p>
+                                <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+                                    <div className="bg-primary h-full" style={{width: `${t.progress}%`}}></div>
+                                </div>
+                                <div className="flex justify-between mt-2 text-[10px] text-gray-500 uppercase tracking-tighter">
+                                    <span>Goal: {t.goal}</span>
+                                    <span>{t.progress}%</span>
+                                </div>
+                            </div>
+                            <div className="ml-6 text-right">
+                                <span className="block text-2xl font-bold text-secondary">{t.count}</span>
+                                <span className="text-[10px] text-gray-500">TODAY</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <button onClick={() => setActiveTab('counter')} className="fixed bottom-24 right-6 w-14 h-14 bg-secondary rounded-full flex items-center justify-center text-surface shadow-lg shadow-secondary/20 z-40">
+                    <i data-lucide="plus" className="w-8 h-8"></i>
+                </button>
+            </div>
+        );
+
+        const CounterPage = () => {
+            const [count, setCount] = useState(33);
+            const handleCount = () => {
+                setCount(prev => prev + 1);
+                if (window.navigator.vibrate) window.navigator.vibrate(50);
+            };
+
+            return (
+                <div className="h-screen flex flex-col pt-24 pb-32 px-6">
+                    <div className="text-center mb-8">
+                        <div className="flex items-center justify-center gap-2 text-gray-500 text-sm mb-2">
+                            <i data-lucide="clock" className="w-4 h-4"></i>
+                            <span>04:23</span>
+                        </div>
+                        <h2 className="text-primary font-medium">Subhanallah</h2>
+                        <p className="text-xl font-garamond text-secondary mt-1">سُبْحَانَ اللهِ</p>
+                        <p className="text-xs text-gray-500 mt-2 italic">Sub-ha-nal-lah (সুবহানাল্লাহ)</p>
+                    </div>
+
+                    <div className="flex-1 flex items-center justify-center relative">
+                        <button 
+                            onClick={handleCount}
+                            className="w-72 h-72 rounded-full border-[6px] border-white/5 flex flex-col items-center justify-center bg-white/[0.02] relative group haptic-active"
+                        >
+                            <div className="absolute inset-2 rounded-full border border-secondary/20 animate-pulse"></div>
+                            <span className="text-7xl font-garamond text-white font-medium">{count}</span>
+                            <span className="text-gray-500 text-sm mt-4 tracking-widest">GOAL 100</span>
+                        </button>
+                        
+                        <div className="absolute left-0 flex flex-col gap-4">
+                            <button onClick={() => setCount(0)} className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center border border-white/10"><i data-lucide="rotate-ccw" className="w-5 h-5"></i></button>
+                        </div>
+
+                        <div className="absolute right-0 flex flex-col gap-4">
+                            <button onClick={() => setCount(prev => Math.max(0, prev - 1))} className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center border border-white/10"><i data-lucide="minus" className="w-5 h-5"></i></button>
+                            <button onClick={() => setCount(prev => prev)} className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center border border-white/10"><i data-lucide="undo-2" className="w-5 h-5"></i></button>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-4 mt-8">
+                        <button className="flex-1 py-3 rounded-full bg-primary/20 border border-primary/30 text-primary font-medium">Subhanallah</button>
+                        <button className="flex-1 py-3 rounded-full bg-white/5 border border-white/10 text-gray-400">Alhamdulillah</button>
+                    </div>
+                </div>
+            );
+        };
+
+        const Stats = () => (
+            <div className="pt-24 pb-32 px-6">
+                <h2 className="text-3xl font-garamond mb-1">Spiritual Analytics</h2>
+                <p className="text-gray-500 text-sm mb-8">Reflection on your weekly devotions</p>
+
+                <div className="bg-surface-container border border-secondary/20 rounded-2xl p-6 mb-6">
+                    <div className="flex justify-between items-start mb-8">
+                        <div>
+                            <p className="text-[10px] text-secondary tracking-widest uppercase mb-1">Weekly Progress</p>
+                            <h3 className="text-3xl font-garamond font-bold">12,450 Dhikr</h3>
+                        </div>
+                        <span className="text-primary text-xs font-medium">+12% vs last week</span>
+                    </div>
+                    
+                    <div className="flex justify-between items-end h-32 gap-2">
+                        {[40, 70, 45, 90, 50, 65, 80].map((h, i) => (
+                            <div key={i} className="flex-1 flex flex-col items-center">
+                                <div className={`w-full rounded-t-sm transition-all duration-500 ${i === 3 ? 'bg-secondary' : 'bg-primary/40'}`} style={{height: `${h}%`}}></div>
+                                <span className="text-[10px] text-gray-500 mt-2 uppercase">{'MTWTFSS'[i]}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="bg-surface-container p-5 rounded-2xl border border-white/5">
+                        <i data-lucide="sparkles" className="text-secondary w-6 h-6 mb-6"></i>
+                        <p className="text-[10px] text-gray-500 uppercase mb-1">Most Read</p>
+                        <h4 className="text-lg font-garamond font-bold">Alhamdulillah</h4>
+                        <p className="text-xs text-primary">3.2k counts</p>
+                    </div>
+                    <div className="bg-surface-container p-5 rounded-2xl border border-white/5">
+                        <i data-lucide="flame" className="text-orange-500 w-6 h-6 mb-6"></i>
+                        <p className="text-[10px] text-gray-500 uppercase mb-1">Active Streak</p>
+                        <h4 className="text-3xl font-garamond font-bold">12</h4>
+                        <p className="text-xs text-gray-400">Days Consistent</p>
+                    </div>
+                </div>
+
+                <div className="bg-surface-container p-4 rounded-2xl border border-white/5 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary"><i data-lucide="check-circle-2"></i></div>
+                        <div>
+                            <p className="font-semibold text-sm">Completed Goals</p>
+                            <p className="text-[10px] text-gray-500">8 out of 10 this month</p>
+                        </div>
+                    </div>
+                    <span className="text-2xl font-garamond font-bold">80%</span>
+                </div>
+            </div>
+        );
+
+        const History = () => (
+            <div className="pt-24 pb-32 px-6">
+                <h2 className="text-3xl font-garamond mb-1 text-secondary">Spiritual Ledger</h2>
+                <p className="text-gray-500 text-sm mb-8">A chronicle of your devotions and reflections.</p>
+
+                <div className="flex gap-2 mb-8">
+                    <button className="flex-1 py-2 rounded-full bg-primary text-white text-sm">Daily</button>
+                    <button className="flex-1 py-2 rounded-full bg-white/5 border border-white/10 text-sm">Weekly</button>
+                    <button className="flex-1 py-2 rounded-full bg-white/5 border border-white/10 text-sm">Monthly</button>
+                </div>
+
+                <div className="relative border-l border-white/5 ml-2 pl-6 space-y-8">
+                    <p className="text-[10px] text-secondary tracking-widest uppercase mb-4 sticky top-24 bg-surface py-2">Today, 24 Ramadan</p>
+                    
+                    {[
+                        { name: 'SubhanAllah', sub: 'Morning Adhkar • 06:15 AM', count: 100, icon: 'sun' },
+                        { name: 'Alhamdulillah', sub: 'Post-Dhuhr • 01:45 PM', count: 33, icon: 'heart' }
+                    ].map((item, i) => (
+                        <div key={i} className="bg-surface-container border border-secondary/30 p-5 rounded-2xl flex justify-between items-center">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-primary"><i data-lucide={item.icon}></i></div>
+                                <div>
+                                    <h4 className="font-semibold">{item.name}</h4>
+                                    <p className="text-[10px] text-gray-500">{item.sub}</p>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <span className="block text-2xl font-garamond font-bold">{item.count}</span>
+                                <span className="text-[10px] text-gray-500 uppercase">beads</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+
+        const Settings = () => (
+            <div className="pt-24 pb-32 px-6">
+                <h2 className="text-3xl font-garamond mb-1 text-secondary">Settings</h2>
+                <p className="text-gray-500 text-sm mb-8">Refine your spiritual experience</p>
+
+                <div className="space-y-8">
+                    <section>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-4">Tactile & Visual</p>
+                        <div className="space-y-4">
+                            <div className="bg-surface-container p-5 rounded-2xl border border-white/5 flex items-center justify-between">
+                                <div className="flex gap-4">
+                                    <i data-lucide="vibrate" className="text-secondary"></i>
+                                    <div>
+                                        <p className="font-medium text-sm">Vibration</p>
+                                        <p className="text-[10px] text-gray-500">Haptic pulse on every count</p>
+                                    </div>
+                                </div>
+                                <div className="w-10 h-5 bg-primary rounded-full relative"><div className="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div></div>
+                            </div>
+                            <div className="bg-surface-container p-5 rounded-2xl border border-white/5 flex items-center justify-between">
+                                <div className="flex gap-4">
+                                    <i data-lucide="moon" className="text-secondary"></i>
+                                    <div>
+                                        <p className="font-medium text-sm">AMOLED Dark Mode</p>
+                                        <p className="text-[10px] text-gray-500">Pure black for OLED screens</p>
+                                    </div>
+                                </div>
+                                <div className="w-10 h-5 bg-primary rounded-full relative"><div className="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-4">Language</p>
+                        <div className="bg-surface-container rounded-2xl border border-white/5 divide-y divide-white/5">
+                            <div className="p-4 flex items-center justify-between"><div className="flex gap-3"><i data-lucide="globe" className="w-5 h-5 text-secondary"></i> English</div><i data-lucide="check-circle-2" className="text-primary w-5 h-5"></i></div>
+                            <div className="p-4 flex items-center gap-3"><i data-lucide="languages" className="w-5 h-5 text-secondary"></i> Bangla</div>
+                            <div className="p-4 flex items-center gap-3"><i data-lucide="library" className="w-5 h-5 text-secondary"></i> العربية</div>
+                        </div>
+                    </section>
+                </div>
+
+                <div className="mt-12 text-center">
+                    <span className="inline-block px-4 py-1.5 rounded-full bg-white/5 text-[10px] text-gray-500 border border-white/10 italic">Version 2.4.0 (Amoled Edition)</span>
+                </div>
+            </div>
+        );
+
+        // --- Main App ---
+        const App = () => {
+            const [showSplash, setShowSplash] = useState(true);
+            const [activeTab, setActiveTab] = useState('home');
+
+            useEffect(() => {
+                if (!showSplash) {
+                    lucide.createIcons();
+                }
+            }, [showSplash, activeTab]);
+
+            if (showSplash) return <SplashScreen onFinish={() => setShowSplash(false)} />;
+
+            const renderContent = () => {
+                switch(activeTab) {
+                    case 'home': return <Dashboard setActiveTab={setActiveTab} />;
+                    case 'counter': return <CounterPage />;
+                    case 'stats': return <Stats />;
+                    case 'history': return <History />;
+                    case 'settings': return <Settings />;
+                    default: return <Dashboard />;
+                }
+            };
+
+            const titles = {
+                home: 'Tasbih Ledger Pro',
+                counter: 'Active Session',
+                stats: 'Analytics',
+                history: 'Ledger',
+                settings: 'Customization'
+            };
+
+            return (
+                <div className="min-h-screen">
+                    <TopAppBar title={titles[activeTab]} />
+                    {renderContent()}
+                    <BottomNavBar activeTab={activeTab} setActiveTab={setActiveTab} />
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</body>
+</html>
